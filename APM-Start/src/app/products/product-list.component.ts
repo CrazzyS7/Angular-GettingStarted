@@ -12,7 +12,16 @@ export class ProductListComponent implements OnInit {
     imageWidth: number = 40;
     imageMargin: number = 2;
     showImage: boolean = false;
-    listFilter: string = '';
+    _listFilter: string;
+    get listFilter(): string {
+        return this._listFilter;
+    }
+    set listFilter( value: string ) {
+        this._listFilter = value;
+        this.filteredProducts = this.listFilter ? this.performFilter( this.listFilter ) : this.products;
+    }
+
+    filteredProducts: iProduct[];
     products: iProduct[] = [
         {
             "productId": 1,
@@ -45,6 +54,21 @@ export class ProductListComponent implements OnInit {
             "imageUrl": "https://openclipart.org/image/300px/svg_to_png/73/rejon_Hammer.png"
         }
     ];
+
+    constructor() {
+        this.filteredProducts = this.products;
+        this.listFilter = '';
+    }
+
+    onRatingClicked( message: string ): void {
+        this.pageTitle = 'Product List: ' + message;
+    }
+
+    performFilter( filterBy: string ): iProduct[] {
+        filterBy = filterBy.toLocaleLowerCase();
+        return this.products.filter(( product: iProduct ) =>
+            product.productName.toLocaleLowerCase().indexOf( filterBy ) !== -1 );
+    }
 
     toggleImage(): void {
         this.showImage = !this.showImage;
